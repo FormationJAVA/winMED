@@ -16,7 +16,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import Diagnostic.*;
 public class Pan extends JPanel implements MouseMotionListener, MouseListener{
-	BufferedImage  img;
+	
 	Graphics2D g2d;
 	ArrayList <Diagnostic> dl;
 	Diagnostic d ;
@@ -36,44 +36,51 @@ public class Pan extends JPanel implements MouseMotionListener, MouseListener{
 		dl.add(new Diagnostic (new Mesure (80,5)));
 		dl.add(new Diagnostic (new Mesure (35,20)));
 		dl.add(new Diagnostic (new Mesure (90,15)));
-		img =new BufferedImage (600, 600, BufferedImage.TYPE_3BYTE_BGR);
-		g2d = img.createGraphics();
+
 	}
 	protected void paintComponent(Graphics g)
 	{
 
 		g2d= (Graphics2D) g;
-		g2d.setColor(cbg);
-		g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
+		paint(g2d);
+		g2d.drawOval(x-20, y-20, 40, 40);
+
+	}
+	private void paint(Graphics2D g)
+	{
+		g.setColor(cbg);
+		g.fillRect(0, 0, this.getWidth(), this.getHeight());
 		int hh = this.getHeight()/2;
-		g2d.setColor(Color.BLACK);
-		g2d.drawString("Rapport Medicale", 250, 30);
-		g2d.drawLine(50, hh, 350, hh);
-		g2d.drawLine(50, hh, 50, (hh)-250);
+		g.setColor(Color.BLACK);
+		g.drawString("Rapport Medicale", 250, 30);
+		g.drawLine(50, hh, 350, hh);
+		g.drawLine(50, hh, 50, (hh)-250);
 		for (int i=0;i< dl.size();i++)
 		{
 			updateColor(dl.get(i));
-			g2d.setColor(cBC);
-			g2d.fillRect(60+(22*i), hh-dl.get(i).mesure.bc, 20, dl.get(i).mesure.bc);
-			g2d.setColor(cTA);
-			g2d.fillRect(60+(dl.size()*22)+(22*i)+5, hh-(dl.get(i).mesure.ta*5), 20, (dl.get(i).mesure.ta*5));
+			g.setColor(cBC);
+			g.fillRect(60+(22*i), hh-dl.get(i).mesure.bc, 20, dl.get(i).mesure.bc);
+			g.setColor(cTA);
+			g.fillRect(60+(dl.size()*22)+(22*i)+5, hh-(dl.get(i).mesure.ta*5), 20, (dl.get(i).mesure.ta*5));
 		}
-		g2d.setColor(Color.BLACK);
-		g2d.drawString("Batement".toString(), 60, hh+20);
-		g2d.drawString("de Coeur".toString(), 60, hh+35);
-		g2d.drawString("Tension".toString(), 60+(dl.size()*22), hh+20);
-		g2d.drawString("Arterielle".toString(),60+(dl.size()*22), hh+35);
-		g2d.drawOval(x-20, y-20, 40, 40);
-		g2d.drawString(x+", "+y, 20, 20);
+		g.setColor(Color.BLACK);
+		g.drawString("Batement".toString(), 60, hh+20);
+		g.drawString("de Coeur".toString(), 60, hh+35);
+		g.drawString("Tension".toString(), 60+(dl.size()*22), hh+20);
+		g.drawString("Arterielle".toString(),60+(dl.size()*22), hh+35);
 
 	}
-	private void creatImg(Graphics2D g2d)
-	{
-		g2d = img.createGraphics();
+	private void creatImg(BufferedImage  img)
+	{// cr�� une image et dessiner dessus
+		Graphics2D g;
+		g = img.createGraphics();
+		paint(g);
+		
 	}
 	private void save (BufferedImage  img) throws IOException
-	{
+	{// Sauvegarder une image dans un fichier
 		File outputfile = new File("monImage.png");
+		creatImg(img);
 		ImageIO.write(img, "PNG", outputfile);
 	}
 	private void updateColor(Diagnostic d)
@@ -104,12 +111,13 @@ public class Pan extends JPanel implements MouseMotionListener, MouseListener{
 	}
 	@Override
 	public void mouseClicked(MouseEvent ev) {
-		// TODO Auto-generated method stub
-	
+		// onClick sauvegader l'image vers un fichier
+		
+		BufferedImage  img =new BufferedImage (this.getWidth(), this.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 		try {
 			save (img);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 	}
